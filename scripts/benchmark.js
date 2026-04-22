@@ -1,11 +1,11 @@
 import fs from 'fs';
-import { TrieEngine } from '../index.js';
+import { TrieEngine } from '../src/index.js';
 import { performance } from 'perf_hooks';
 
 const tiers = [
-    { name: 'Small', file: './small_tier.json' },
-    { name: 'Medium', file: './medium_trie.json' },
-    { name: 'Large', file: './large_trie.json' }
+    { name: 'Small', file: './data/small_tier.json' },
+    { name: 'Medium', file: './data/medium_trie.json' },
+    { name: 'Large', file: './data/large_trie.json' }
 ];
 
 console.log('⏱️ Starting Performance Benchmarks...\n');

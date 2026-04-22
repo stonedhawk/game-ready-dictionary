@@ -1,9 +1,9 @@
 import fs from 'fs';
-import { TrieEngine } from '../index.js';
+import { TrieEngine } from '../src/index.js';
 
-const small = JSON.parse(fs.readFileSync('./small_tier.json', 'utf8'));
-const medium = JSON.parse(fs.readFileSync('./medium_array.json', 'utf8'));
-const large = JSON.parse(fs.readFileSync('./large_array.json', 'utf8'));
+const small = JSON.parse(fs.readFileSync('./data/small_tier.json', 'utf8'));
+const medium = JSON.parse(fs.readFileSync('./data/medium_array.json', 'utf8'));
+const large = JSON.parse(fs.readFileSync('./data/large_array.json', 'utf8'));
 
 const smallSet = new Set(small);
 const mediumSet = new Set(medium);
@@ -61,8 +61,8 @@ const checkTrie = (filename) => {
     return true;
 };
 
-const t1 = checkTrie('./medium_trie.json');
-const t2 = checkTrie('./large_trie.json');
+const t1 = checkTrie('./data/medium_trie.json');
+const t2 = checkTrie('./data/large_trie.json');
 
 // 4. Blocklist Check (Sanity)
 const blocklist = ['facebook', 'google', 'fuck']; // Sample blocked terms

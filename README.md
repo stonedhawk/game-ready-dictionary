@@ -30,9 +30,9 @@ We provide three distinct tiers to balance vocabulary depth with asset size:
 
 The Medium tier is exported in three formats to suit different development needs:
 
-- `medium_array.json` / `large_array.json`: A standard alphabetical array of all valid words.
-- `medium_by_length.json` / `large_by_length.json`: An object keyed by word length.
-- `medium_trie.json` / `large_trie.json`: A nested JSON Trie structure optimized for $O(m)$ lookups.
+- `data/medium_array.json` / `data/large_array.json`: A standard alphabetical array of all valid words.
+- `data/medium_by_length.json` / `data/large_by_length.json`: An object keyed by word length.
+- `data/medium_trie.json` / `data/large_trie.json`: A nested JSON Trie structure optimized for $O(m)$ lookups.
 
 ---
 
@@ -43,7 +43,7 @@ The dictionary is provided as a **pre-compiled Trie**, allowing for $O(m)$ looku
 ### Quick Start (Trie)
 ```javascript
 import { TrieEngine } from 'game-ready-dictionary';
-import trieData from './medium_trie.json';
+import trieData from 'game-ready-dictionary/data/medium_trie.json';
 
 const trie = new TrieEngine(trieData);
 
