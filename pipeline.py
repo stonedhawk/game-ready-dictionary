@@ -73,10 +73,14 @@ def main():
     DESK_URL = "https://raw.githubusercontent.com/mattwarren/Spelling-Corrector/master/SpellingCorrector/WordLists/5desk.txt"
     FREQ_URL = "https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english.txt"
     ENABLE_URL = "https://raw.githubusercontent.com/dolph/dictionary/master/enable1.txt"
+    US_URL = "https://raw.githubusercontent.com/en-wl/wordlist-diff/diff/en_US.txt"
+    UK_URL = "https://raw.githubusercontent.com/en-wl/wordlist-diff/diff/en_GB-ise.txt"
     
     DESK_FILE = "sources/5desk.txt"
     FREQ_FILE = "sources/google-10000.txt"
     ENABLE_FILE = "sources/enable1.txt"
+    US_FILE = "sources/en_US.txt"
+    UK_FILE = "sources/en_GB.txt"
     
     try:
         # Step 0: Ensure directories exist
@@ -87,6 +91,8 @@ def main():
         download_file(DESK_URL, DESK_FILE)
         download_file(FREQ_URL, FREQ_FILE)
         download_file(ENABLE_URL, ENABLE_FILE)
+        download_file(US_URL, US_FILE)
+        download_file(UK_URL, UK_FILE)
         
         # Step 2: Load and Clean Medium Tier (Full 12Dicts)
         with open(DESK_FILE, 'r', encoding='utf-8', errors='ignore') as f:
@@ -139,7 +145,26 @@ def main():
         with open("data/large_trie.json", "w") as f:
             json.dump(build_trie(large_words), f)
 
-        print("\n✨ All tiers and formats generated successfully!")
+        # Step 7: Process Dialects (US/UK)
+        print("💾 Processing Dialect: US English...")
+        with open(US_FILE, 'r', encoding='utf-8', errors='ignore') as f:
+            us_raw = f.readlines()
+        us_words = clean_words(us_raw)
+        with open("data/us_array.json", "w") as f:
+            json.dump(us_words, f, indent=2)
+        with open("data/us_trie.json", "w") as f:
+            json.dump(build_trie(us_words), f)
+
+        print("💾 Processing Dialect: UK English...")
+        with open(UK_FILE, 'r', encoding='utf-8', errors='ignore') as f:
+            uk_raw = f.readlines()
+        uk_words = clean_words(uk_raw)
+        with open("data/uk_array.json", "w") as f:
+            json.dump(uk_words, f, indent=2)
+        with open("data/uk_trie.json", "w") as f:
+            json.dump(build_trie(uk_words), f)
+
+        print("\n✨ All tiers and dialects generated successfully!")
         
     except Exception as e:
         print(f"❌ Error during pipeline execution: {e}")

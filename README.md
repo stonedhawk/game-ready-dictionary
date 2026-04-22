@@ -22,7 +22,8 @@ We provide three distinct tiers to balance vocabulary depth with asset size:
 | :--- | :--- | :--- | :--- |
 | **Small** | ~7,000 words | Intersection of 12Dicts and Top 10k Google English list. | Casual mobile games, ultra-fast loading. |
 | **Medium** | ~60,000 words | The full 12Dicts (5desk) base list, cleaned and filtered. | Standard crosswords, word search, roguelites. |
-| **Large** | ~172,000 words | The ENABLE1 word list, the industry standard for word games. | Complex lexical analysis, deep-strategy games. |
+| **Large** | ~182,000 words | The ENABLE1 word list + 12Dicts (superset). | Professional-grade validation, deep-strategy games. |
+| **Dialects** | US / UK | SCOWL (American/British) specialized word lists. | Games requiring dialect-specific spelling (color vs colour). |
 
 ---
 
@@ -47,13 +48,24 @@ import trieData from 'game-ready-dictionary/data/medium_trie.json';
 
 const trie = new TrieEngine(trieData);
 
-// O(m) Validation
-if (trie.validate('antigravity')) {
-  console.log('Valid word found!');
+if (trie.validate('apple')) {
+  console.log('Valid word!');
 }
+```
 
-// Prefix Search
-const suggestions = trie.getPrefixMatches('anti');
+### Dialect Support (US vs UK)
+You can specifically import American or British English to handle spelling variations (e.g., *color* vs *colour*):
+
+```javascript
+import { TrieEngine } from 'game-ready-dictionary';
+import usData from 'game-ready-dictionary/us';
+import ukData from 'game-ready-dictionary/uk';
+
+const usTrie = new TrieEngine(usData);
+const ukTrie = new TrieEngine(ukData);
+
+console.log(usTrie.validate('color')); // true
+console.log(ukTrie.validate('color')); // false
 ```
 
 ---
