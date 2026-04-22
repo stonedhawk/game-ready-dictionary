@@ -74,9 +74,9 @@ def main():
     FREQ_URL = "https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english.txt"
     ENABLE_URL = "https://raw.githubusercontent.com/dolph/dictionary/master/enable1.txt"
     
-    DESK_FILE = "5desk.txt"
-    FREQ_FILE = "google-10000.txt"
-    ENABLE_FILE = "enable1.txt"
+    DESK_FILE = "sources/5desk.txt"
+    FREQ_FILE = "sources/google-10000.txt"
+    ENABLE_FILE = "sources/enable1.txt"
     
     try:
         # Step 1: Download resources
@@ -97,22 +97,22 @@ def main():
         
         # Step 4: Save Small Tier
         print(f"💾 Saving Small tier ({len(small_words)} words)...")
-        with open("small_tier.json", "w") as f:
+        with open("data/small_tier.json", "w") as f:
             json.dump(small_words, f, indent=2)
 
         # Step 5: Process and Save Medium Tier Outputs
         print(f"💾 Processing Medium tier ({len(medium_words)} words)...")
         
         # 5a: Standard Array
-        with open("medium_array.json", "w") as f:
+        with open("data/medium_array.json", "w") as f:
             json.dump(medium_words, f, indent=2)
             
         # 5b: Length-indexed object
-        with open("medium_by_length.json", "w") as f:
+        with open("data/medium_by_length.json", "w") as f:
             json.dump(build_by_length(medium_words), f, indent=2)
             
         # 5c: Nested Trie structure
-        with open("medium_trie.json", "w") as f:
+        with open("data/medium_trie.json", "w") as f:
             json.dump(build_trie(medium_words), f) # No indent for compression
             
         # Step 6: Process and Save Large Tier
@@ -124,15 +124,15 @@ def main():
         print(f"💾 Saving Large tier ({len(large_words)} words)...")
 
         # 6a: Standard Array
-        with open("large_array.json", "w") as f:
+        with open("data/large_array.json", "w") as f:
             json.dump(large_words, f, indent=2)
 
         # 6b: Length-indexed object
-        with open("large_by_length.json", "w") as f:
+        with open("data/large_by_length.json", "w") as f:
             json.dump(build_by_length(large_words), f, indent=2)
 
         # 6c: Nested Trie structure
-        with open("large_trie.json", "w") as f:
+        with open("data/large_trie.json", "w") as f:
             json.dump(build_trie(large_words), f)
 
         print("\n✨ All tiers and formats generated successfully!")

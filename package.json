@@ -1,13 +1,13 @@
 {
   "name": "game-ready-dictionary",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Open-source, pre-compiled Trie-based dictionary for web-based word games.",
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
     "test": "node scripts/test_integrity.js",
     "benchmark": "node scripts/benchmark.js",
-    "compile": "node scripts/compile.js"
+    "compile": "python3 pipeline.py"
   },
   "keywords": [
     "dictionary",
