@@ -72,14 +72,17 @@ def main():
     # URLs for resources
     DESK_URL = "https://raw.githubusercontent.com/mattwarren/Spelling-Corrector/master/SpellingCorrector/WordLists/5desk.txt"
     FREQ_URL = "https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english.txt"
+    ENABLE_URL = "https://raw.githubusercontent.com/dolph/dictionary/master/enable1.txt"
     
     DESK_FILE = "5desk.txt"
     FREQ_FILE = "google-10000.txt"
+    ENABLE_FILE = "enable1.txt"
     
     try:
         # Step 1: Download resources
         download_file(DESK_URL, DESK_FILE)
         download_file(FREQ_URL, FREQ_FILE)
+        download_file(ENABLE_URL, ENABLE_FILE)
         
         # Step 2: Load and Clean Medium Tier (Full 12Dicts)
         with open(DESK_FILE, 'r', encoding='utf-8', errors='ignore') as f:
@@ -112,10 +115,24 @@ def main():
         with open("medium_trie.json", "w") as f:
             json.dump(build_trie(medium_words), f) # No indent for compression
             
-        # Step 6: Large Tier Placeholder
-        print("💾 Creating Large tier placeholder...")
+        # Step 6: Process and Save Large Tier
+        print(f"💾 Processing Large tier... (loading ENABLE1)")
+        with open(ENABLE_FILE, 'r', encoding='utf-8', errors='ignore') as f:
+            large_raw = f.readlines()
+        large_words = clean_words(large_raw)
+        print(f"💾 Saving Large tier ({len(large_words)} words)...")
+
+        # 6a: Standard Array
         with open("large_tier.json", "w") as f:
-            json.dump({"status": "placeholder", "info": "Future expansion for 100k+ words"}, f, indent=2)
+            json.dump(large_words, f, indent=2)
+
+        # 6b: Length-indexed object
+        with open("large_by_length.json", "w") as f:
+            json.dump(build_by_length(large_words), f, indent=2)
+
+        # 6c: Nested Trie structure
+        with open("large_trie.json", "w") as f:
+            json.dump(build_trie(large_words), f)
 
         print("\n✨ All tiers and formats generated successfully!")
         
