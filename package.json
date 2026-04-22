@@ -1,0 +1,28 @@
+{
+  "name": "game-ready-dictionary",
+  "version": "1.0.0",
+  "description": "Open-source, pre-compiled Trie-based dictionary for web-based word games.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "node scripts/compile.js"
+  },
+  "keywords": [
+    "dictionary",
+    "word-game",
+    "trie",
+    "lexicon",
+    "gamedev"
+  ],
+  "author": "stonedhawk",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stonedhawk/game-ready-dictionary.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stonedhawk/game-ready-dictionary/issues"
+  },
+  "homepage": "https://github.com/stonedhawk/game-ready-dictionary#readme"
+}

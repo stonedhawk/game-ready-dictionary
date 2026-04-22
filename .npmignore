@@ -1,0 +1,8 @@
+# NPM Ignore
+pipeline.py
+scripts/
+5desk.txt
+google-10000.txt
+.github/
+implementation_plan.md
+clean_base.json
