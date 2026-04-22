@@ -15,11 +15,11 @@ except ImportError:
 
 # Hardcoded array of non-dictionary brand names to block
 TRADEMARK_BLOCKLIST = [
-    "facebook", "google", "microsoft", "apple", "amazon", "netflix", 
+    "facebook", "google", "microsoft", "netflix", 
     "twitter", "instagram", "tiktok", "disney", "nintendo", "sony",
     "adidas", "nike", "pepsi", "coca-cola", "mcdonalds", "starbucks",
     "tesla", "uber", "airbnb", "spotify", "adobe", "nvidia", "intel",
-    "lexus", "toyota", "ford", "honda", "samsung", "iphone", "ipad"
+    "lexus", "toyota", "samsung", "iphone", "ipad"
 ]
 
 def download_file(url, filename):
@@ -119,11 +119,12 @@ def main():
         print(f"💾 Processing Large tier... (loading ENABLE1)")
         with open(ENABLE_FILE, 'r', encoding='utf-8', errors='ignore') as f:
             large_raw = f.readlines()
-        large_words = clean_words(large_raw)
+        large_words_raw = clean_words(large_raw)
+        large_words = sorted(list(set(large_words_raw) | set(medium_words)))
         print(f"💾 Saving Large tier ({len(large_words)} words)...")
 
         # 6a: Standard Array
-        with open("large_tier.json", "w") as f:
+        with open("large_array.json", "w") as f:
             json.dump(large_words, f, indent=2)
 
         # 6b: Length-indexed object

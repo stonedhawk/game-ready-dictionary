@@ -29,7 +29,7 @@ jobs:
         run: python3 pipeline.py
 
       - name: Package Assets
-        run: zip -r dictionary-data.zip small_tier.json medium_array.json medium_by_length.json medium_trie.json large_tier.json large_by_length.json large_trie.json
+        run: zip -r dictionary-data.zip small_tier.json medium_array.json medium_by_length.json medium_trie.json large_array.json large_by_length.json large_trie.json
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
