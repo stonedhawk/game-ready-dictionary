@@ -28,6 +28,9 @@ jobs:
       - name: Generate Dictionary Data
         run: python3 pipeline.py
 
+      - name: Run Pipeline Tests (Python)
+        run: python3 -m unittest test_pipeline.py
+
       - name: Package Assets
         run: zip -r dictionary-data.zip data/
 
