@@ -1,0 +1,57 @@
+name: Release and Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Trigger on semantic version tags
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for creating releases
+      id-token: write # Required for provenance if needed
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Python Dependencies
+        run: pip install requests better_profanity
+
+      - name: Generate Dictionary Data
+        run: python3 pipeline.py
+
+      - name: Package Assets
+        run: zip -r dictionary-data.zip small_tier.json medium_array.json medium_by_length.json medium_trie.json large_tier.json
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dictionary-data.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Update package.json Version
+        run: |
+          # Extract version from tag (e.g., v1.0.0 -> 1.0.0)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          npm version $VERSION --no-git-tag-version
+
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          # IMPORTANT: Ensure you have added NPM_TOKEN to your GitHub Repository Secrets
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
