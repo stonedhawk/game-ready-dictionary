@@ -22,7 +22,7 @@ We provide three distinct tiers to balance vocabulary depth with asset size:
 | :--- | :--- | :--- | :--- |
 | **Small** | ~7,000 words | Intersection of 12Dicts and Top 10k Google English list. | Casual mobile games, ultra-fast loading. |
 | **Medium** | ~60,000 words | The full 12Dicts (5desk) base list, cleaned and filtered. | Standard crosswords, word search, roguelites. |
-| **Large** | Placeholder | Planned expansion for 100k+ terms including rare/archaic words. | Complex lexical analysis, deep-strategy games. |
+| **Large** | ~172,000 words | The ENABLE1 word list, the industry standard for word games. | Complex lexical analysis, deep-strategy games. |
 
 ---
 
@@ -30,9 +30,9 @@ We provide three distinct tiers to balance vocabulary depth with asset size:
 
 The Medium tier is exported in three formats to suit different development needs:
 
-- `medium_array.json`: A standard alphabetical array of all valid words.
-- `medium_by_length.json`: An object keyed by word length (e.g., `{ 3: ["cat", ...], 4: ["bird", ...] }`).
-- `medium_trie.json`: A nested JSON Trie structure optimized for $O(m)$ lookups.
+- `medium_array.json` / `large_tier.json`: A standard alphabetical array of all valid words.
+- `medium_by_length.json` / `large_by_length.json`: An object keyed by word length.
+- `medium_trie.json` / `large_trie.json`: A nested JSON Trie structure optimized for $O(m)$ lookups.
 
 ---
 
