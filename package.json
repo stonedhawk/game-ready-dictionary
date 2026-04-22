@@ -5,7 +5,9 @@
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",
-    "./data": "./data/medium_trie.json"
+    "./data": "./data/medium_trie.json",
+    "./us": "./data/us_trie.json",
+    "./uk": "./data/uk_trie.json"
   },
   "type": "module",
   "scripts": {
