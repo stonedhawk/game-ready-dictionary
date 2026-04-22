@@ -79,6 +79,10 @@ def main():
     ENABLE_FILE = "sources/enable1.txt"
     
     try:
+        # Step 0: Ensure directories exist
+        os.makedirs("data", exist_ok=True)
+        os.makedirs("sources", exist_ok=True)
+
         # Step 1: Download resources
         download_file(DESK_URL, DESK_FILE)
         download_file(FREQ_URL, FREQ_FILE)
