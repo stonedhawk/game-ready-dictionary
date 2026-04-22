@@ -1,5 +1,5 @@
 {
-  "name": "game-ready-dictionary",
+  "name": "@rahulmrx/game-ready-dictionary",
   "version": "0.0.0",
   "description": "Open-source, pre-compiled Trie-based dictionary for web-based word games.",
   "main": "src/index.js",
