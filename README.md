@@ -30,7 +30,7 @@ We provide three distinct tiers to balance vocabulary depth with asset size:
 
 The Medium tier is exported in three formats to suit different development needs:
 
-- `medium_array.json` / `large_tier.json`: A standard alphabetical array of all valid words.
+- `medium_array.json` / `large_array.json`: A standard alphabetical array of all valid words.
 - `medium_by_length.json` / `large_by_length.json`: An object keyed by word length.
 - `medium_trie.json` / `large_trie.json`: A nested JSON Trie structure optimized for $O(m)$ lookups.
 
