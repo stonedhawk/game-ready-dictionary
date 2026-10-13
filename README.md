@@ -6,6 +6,8 @@
 
 **Game-Ready Dictionary** is a high-performance, pre-compiled, Trie-based word validation library designed specifically for web-based game development. 
 
+![Game-Ready Dictionary demo: install, validate words, prefix search, US and UK spelling, 100k lookups in about 6 ms](https://raw.githubusercontent.com/stonedhawk/game-ready-dictionary/main/docs/demo.gif)
+
 Whether you're building a word puzzle, a roguelite with lexical mechanics, or a professional Scrabble clone, this library provides **O(m) lookup speeds** and **zero-latency** validation with zero external dependencies.
 
 ---
