@@ -1,13 +1,17 @@
 {
   "name": "@rahulmrx/game-ready-dictionary",
-  "version": "0.0.0",
+  "version": "1.1.0",
   "description": "Open-source, pre-compiled Trie-based dictionary for web-based word games.",
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",
     "./data": "./data/medium_trie.json",
+    "./small": "./data/small_trie.json",
+    "./medium": "./data/medium_trie.json",
+    "./large": "./data/large_trie.json",
     "./us": "./data/us_trie.json",
-    "./uk": "./data/uk_trie.json"
+    "./uk": "./data/uk_trie.json",
+    "./data/*": "./data/*"
   },
   "type": "module",
   "scripts": {

@@ -11,7 +11,7 @@ All Pull Requests must adhere to the following three rules. Failure to comply wi
 ### 1. Immutable Output
 **Never manually edit the compiled `.json` files.**
 The JSON assets in `data/` (Small, Medium, Large, US and UK, in array, length-indexed and Trie formats) are generated programmatically. Any manual changes to these files will be overwritten the next time the pipeline runs. 
-- The pipeline re-downloads every file in `sources/` on each run, so local edits to those files are overwritten. Make word additions or removals in **`pipeline.py`**, for example through the **`TRADEMARK_BLOCKLIST`**.
+- The pipeline re-downloads every file in `sources/` on each run, so local edits to those files are overwritten. Make word additions or removals in **`pipeline.py`**, for example through the **`TRADEMARK_BLOCKLIST`**. Each source is pinned to an upstream commit and a SHA-256 in `SOURCES`; to move to a newer upstream list, update both in the same PR and regenerate `data/`.
 - If the logic of the Trie or tiering needs to change, modify the `pipeline.py` script itself.
 
 ### 2. Objective Verification

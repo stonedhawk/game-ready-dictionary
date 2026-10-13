@@ -2,6 +2,9 @@ import unittest
 import json
 import os
 import re
+from unittest import mock
+
+import pipeline
 
 class TestPipeline(unittest.TestCase):
     def setUp(self):
@@ -45,6 +48,27 @@ class TestPipeline(unittest.TestCase):
         for word in blocked:
             self.assertNotIn(word, self.medium_array, f"Blocked word '{word}' found in Medium array")
             self.assertNotIn(word, self.large_array, f"Blocked word '{word}' found in Large array")
+
+class TestPipelineFailsLoudly(unittest.TestCase):
+    def test_checksum_mismatch_raises(self):
+        """4. A download whose SHA-256 does not match the pin stops the build."""
+        fake = mock.Mock(content=b"tampered", raise_for_status=mock.Mock())
+        with mock.patch.object(pipeline.requests, "get", return_value=fake), \
+             mock.patch("builtins.open", mock.mock_open()) as opened:
+            with self.assertRaises(ValueError):
+                pipeline.download_file("https://example.invalid/x.txt", "sources/x.txt", "0" * 64)
+            opened.assert_not_called()
+
+    def test_small_tier_raises(self):
+        """5. A tier that comes out nearly empty stops the build."""
+        with self.assertRaises(ValueError):
+            pipeline.require_words(["apple"], "Medium tier", 50000)
+
+    def test_sources_are_pinned(self):
+        """6. Every source URL is pinned to a commit SHA and has a checksum."""
+        for name, source in pipeline.SOURCES.items():
+            self.assertRegex(source["url"], r"/[0-9a-f]{40}/", f"{name} is not pinned to a commit")
+            self.assertRegex(source["sha256"], r"^[0-9a-f]{64}$", f"{name} has no SHA-256")
 
 if __name__ == '__main__':
     unittest.main()

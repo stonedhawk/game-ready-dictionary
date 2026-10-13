@@ -14,10 +14,10 @@ Use it for word puzzles, word-search or crossword games, or any game mechanic th
 
 ## 🚀 Key Features
 
-- **⚡ Fast lookups**: about 0.0001 ms per lookup on the Medium and Large tries (see Performance Benchmarks below).
+- **⚡ Fast lookups**: about 0.0001 ms per lookup on every tier (see Performance Benchmarks below).
 - **🌍 Dialect Support**: separate **US (American)** and **UK (British)** English word lists, so *color* and *colour* validate in the right dialect.
-- **📦 Tiered Word Lists**: `Small`, `Medium`, and `Large` tiers trade bundle size against vocabulary depth. See Dictionary Tiers below for which ones the package exports.
-- **🛡️ Filtered at build time**: the data pipeline drops words flagged by the `better_profanity` word list and a hardcoded trademark blocklist in [`pipeline.py`](pipeline.py).
+- **📦 Tiered Word Lists**: `Small`, `Medium`, and `Large` tiers trade bundle size against vocabulary depth. Each tier is exported as a ready-to-use trie.
+- **🛡️ Filtered at build time**: the data pipeline drops words flagged by the `better_profanity` word list and a hardcoded trademark blocklist in [`pipeline.py`](pipeline.py). The build stops if the filter is not installed.
 - **🛠️ Plain ES module**: the engine has no Node-specific APIs. Bundlers that handle JSON imports, such as Vite, bundle it for the browser. Node needs a JSON import attribute (see Usage).
 - **📊 Open word lists**: built from ENABLE1, 12Dicts and SCOWL/ESDB word lists (see Data sources below).
 
@@ -70,34 +70,45 @@ console.log(usTrie.validate('color')); // true
 console.log(ukTrie.validate('color')); // false
 ```
 
+### Choosing a Tier
+
+```javascript
+import small from '@rahulmrx/game-ready-dictionary/small' with { type: 'json' };   // 6,966 words
+import medium from '@rahulmrx/game-ready-dictionary/medium' with { type: 'json' }; // 59,955 words (same as /data)
+import large from '@rahulmrx/game-ready-dictionary/large' with { type: 'json' };   // 182,008 words
+
+const trie = new TrieEngine(large);
+
+// Plain word arrays and length-indexed lists are also available under /data/
+import words from '@rahulmrx/game-ready-dictionary/data/small_tier.json' with { type: 'json' };
+```
+
 ---
 
 ## 📊 Dictionary Tiers
 
 | Tier | Word Count | Data Source | Package export | Use Case |
 | :--- | :--- | :--- | :--- | :--- |
-| **Small** | 6,966 | 12Dicts (5desk) ∩ Google top 10,000 English words | not exported (array file in `data/`) | Casual mobile games, Wordle-style games. |
-| **Medium** | 59,955 | 12Dicts (5desk) | `@rahulmrx/game-ready-dictionary/data` | Standard crosswords, word search, roguelites. |
-| **Large** | 182,008 | ENABLE1 + Medium tier (superset) | not exported (trie and array files in `data/`) | Larger vocabularies, deep-strategy games. |
-| **US** | 88,723 | SCOWL/ESDB `en_US` (size 60) | `@rahulmrx/game-ready-dictionary/us` | US spelling (color). |
-| **UK** | 88,553 | SCOWL/ESDB `en_GB-ise` (size 60) | `@rahulmrx/game-ready-dictionary/uk` | UK spelling (colour). |
+| **Small** | 6,966 | 12Dicts (5desk) ∩ Google top 10,000 English words | `/small` | Casual mobile games, Wordle-style games. |
+| **Medium** | 59,955 | 12Dicts (5desk) | `/medium` (also `/data`) | Standard crosswords, word search, roguelites. |
+| **Large** | 182,008 | ENABLE1 + Medium tier (superset) | `/large` | Larger vocabularies, deep-strategy games. |
+| **US** | 88,723 | SCOWL/ESDB `en_US` (size 60) | `/us` | US spelling (color). |
+| **UK** | 88,553 | SCOWL/ESDB `en_GB-ise` (size 60) | `/uk` | UK spelling (colour). |
 
-Word counts are from the JSON files in this repository.
-
-The package's `exports` map only exposes the Medium, US and UK tries. The Small and Large files ship in the package's `data/` folder, but Node and bundlers that enforce `exports` will refuse to import them by path, so copy the file into your project to use those tiers. The Small tier is a plain word array (no trie).
+Word counts are from the JSON files in this repository. Every export is a trie for `TrieEngine`. The `/data/*` path exposes the other generated files: `small_tier.json`, `medium_array.json` and `large_array.json` (word arrays), `medium_by_length.json` and `large_by_length.json` (words grouped by length), and `us_array.json` / `uk_array.json`.
 
 ---
 
 ## ⏱️ Performance Benchmarks
 
-Measured with `npm run benchmark` ([`scripts/benchmark.js`](scripts/benchmark.js)) on Node.js 25 on an Apple M4 Pro:
+Measured with `npm run benchmark` ([`scripts/benchmark.js`](scripts/benchmark.js)) on Node.js 25 on an Apple M4 Pro, three runs:
 
 | Metric | Small Tier | Medium Tier | Large Tier |
 | :--- | :--- | :--- | :--- |
-| **Load Time** | 0.8 ms | 26 ms | 73 ms |
-| **Avg Lookup** | 0.004 ms | 0.0001 ms | 0.0001 ms |
+| **Load Time** | 3.4 ms | 23 ms | 57 to 72 ms |
+| **Avg Lookup** | 0.0001 ms | 0.0001 ms | 0.0001 ms |
 
-The Small tier is benchmarked as a plain array lookup (`Array.includes`), not a trie. For Medium and Large, load time includes reading the matching word-array file the script uses for word counts. Your numbers will vary with hardware and runtime.
+All three tiers are benchmarked as tries through `TrieEngine`. Load time includes reading the matching word-array file the script uses for word counts. Your numbers will vary with hardware and runtime.
 
 ---
 
@@ -110,18 +121,20 @@ npm test               # integrity checks on the generated files
 python3 -m unittest test_pipeline.py
 ```
 
-The pipeline downloads its source lists on every run (overwriting `sources/`). The US and UK lists come from the live `en-wl/wordlist-diff` branch, so they can change between builds.
+Every source list is pinned to a fixed upstream commit and checked against a SHA-256 in [`pipeline.py`](pipeline.py), so a rebuild reproduces the committed `data/` files byte for byte. The pipeline exits with a non-zero status if a download fails, a checksum does not match, `better_profanity` is missing, or a tier comes out too small. To move to a newer word list, update its URL and checksum in `SOURCES`.
 
 ---
 
 ## 📚 Data sources
 
-| Tier | Source file | Downloaded from |
-| :--- | :--- | :--- |
-| Medium | `5desk.txt` (12Dicts) | [mattwarren/Spelling-Corrector](https://github.com/mattwarren/Spelling-Corrector) |
-| Small | `google-10000-english.txt` | [first20hours/google-10000-english](https://github.com/first20hours/google-10000-english) |
-| Large | `enable1.txt` | [dolph/dictionary](https://github.com/dolph/dictionary) |
-| US / UK | `en_US.txt`, `en_GB-ise.txt` (SCOWL/ESDB) | [en-wl/wordlist-diff](https://github.com/en-wl/wordlist-diff) |
+| Tier | Source file | Downloaded from | Pinned version |
+| :--- | :--- | :--- | :--- |
+| Medium | `5desk.txt` (12Dicts) | [mattwarren/Spelling-Corrector](https://github.com/mattwarren/Spelling-Corrector) | commit `db65ff5` |
+| Small | `google-10000-english.txt` | [first20hours/google-10000-english](https://github.com/first20hours/google-10000-english) | commit `d0736d4` |
+| Large | `enable1.txt` | [dolph/dictionary](https://github.com/dolph/dictionary) | commit `233d25a` |
+| US / UK | `en_US.txt`, `en_GB-ise.txt` (SCOWL/ESDB) | [en-wl/wordlist-diff](https://github.com/en-wl/wordlist-diff) | commit `3e3a454` (2026-03-18), generated from [en-wl/wordlist](https://github.com/en-wl/wordlist) commit `d0600b4` |
+
+`en-wl/wordlist-diff` warns that its history may be regenerated, which would change commit IDs. If that happens the pinned download fails and the build stops. Re-pin to the regenerated commit for `en-wl/wordlist` commit `d0600b4`; the checksum confirms the file is unchanged.
 
 ---
 

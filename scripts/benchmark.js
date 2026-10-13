@@ -3,7 +3,7 @@ import { TrieEngine } from '../src/index.js';
 import { performance } from 'perf_hooks';
 
 const tiers = [
-    { name: 'Small', file: './data/small_tier.json' },
+    { name: 'Small', file: './data/small_trie.json' },
     { name: 'Medium', file: './data/medium_trie.json' },
     { name: 'Large', file: './data/large_trie.json' }
 ];
@@ -26,7 +26,7 @@ tiers.forEach(tier => {
     } else {
         engine = new TrieEngine(data);
         // Approximate count for Trie is harder, we'll just use the array length from corresponding array file
-        const arrayFile = tier.file.replace('_trie.json', '_array.json').replace('small_tier.json', 'small_tier.json');
+        const arrayFile = tier.file.replace('small_trie.json', 'small_tier.json').replace('_trie.json', '_array.json');
         try {
             const arrayData = JSON.parse(fs.readFileSync(arrayFile, 'utf8'));
             wordCount = arrayData.length;
