@@ -61,6 +61,7 @@ const checkTrie = (filename) => {
     return true;
 };
 
+const t0 = checkTrie('./data/small_trie.json');
 const t1 = checkTrie('./data/medium_trie.json');
 const t2 = checkTrie('./data/large_trie.json');
 const t3 = checkTrie('./data/us_trie.json');
@@ -106,8 +107,23 @@ const checkDialects = () => {
 
 const d1 = checkDialects();
 
+// 6. Package exports resolve to real files
+const checkExports = () => {
+    const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+    const missing = Object.entries(pkg.exports)
+        .filter(([key, target]) => !target.includes('*') && !fs.existsSync(target));
+    if (missing.length === 0) {
+        console.log(`✅ All ${Object.keys(pkg.exports).length} package exports resolve`);
+        return true;
+    }
+    console.error('❌ Package exports point to missing files:', missing);
+    return false;
+};
+
+const e1 = checkExports();
+
 console.log('\n--- Result Summary ---');
-if (s1 && s2 && c1 && c2 && c3 && t1 && t2 && t3 && t4 && b1 && d1) {
+if (s1 && s2 && c1 && c2 && c3 && t0 && t1 && t2 && t3 && t4 && b1 && d1 && e1) {
     console.log('🌟 ALL INTEGRITY TESTS PASSED 🌟');
     process.exit(0);
 } else {
