@@ -33,7 +33,7 @@ We remove brand names to protect developers from trademark issues, but we do not
 1.  Update the `TRADEMARK_BLOCKLIST` or the processing logic in `pipeline.py`. (Do not edit files in `sources/`: they are checksum-verified and the build will stop.)
 2.  Run the pipeline and tests locally to verify the changes:
     ```bash
-    pip install requests better_profanity
+    pip install requests better_profanity==0.7.0
     python3 pipeline.py
     python3 -m unittest test_pipeline.py
     npm test

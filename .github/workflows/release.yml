@@ -23,7 +23,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install Python Dependencies
-        run: pip install requests better_profanity
+        run: pip install requests better_profanity==0.7.0
 
       - name: Generate Dictionary Data (from vendored, checksum-verified sources)
         run: python3 pipeline.py

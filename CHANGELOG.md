@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 - Pipeline unit tests for checksum failures (downloaded and vendored), undersized tiers, source pinning and offline default builds; an integrity check that every package export resolves.
 
 ### Changed
-- Pinned every upstream word list to a fixed commit with a SHA-256 check. US/UK lists are pinned to `en-wl/wordlist-diff` commit `3e3a454` (2026-03-18). Rebuilds now reproduce the committed data byte for byte, and the release workflow fails if they do not.
+- Pinned every upstream word list to a fixed commit with a SHA-256 check. US/UK lists are pinned to `en-wl/wordlist-diff` commit `3e3a454` (2026-03-18). Rebuilds now reproduce the committed data byte for byte, and the release workflow fails if they do not. The release workflow pins `better_profanity==0.7.0`, the filter version the data was built with.
 - `pipeline.py` builds from the vendored files in `sources/` by default, with no network access; `--refresh` (`npm run compile:refresh`) re-downloads the pinned files first.
 - `pipeline.py` now exits non-zero on download, checksum or size failures and when `better_profanity` is missing. It previously printed the error and exited 0, and silently skipped profanity filtering without the package.
 - `.npmignore` now excludes `sources/`, `test_pipeline.py`, `__pycache__/`, `dictionary-data.zip` and `data/clean_base.json`. Package size drops from 27.9 MB to 21.0 MB unpacked (7.4 MB to 3.1 MB packed) in the release workflow.

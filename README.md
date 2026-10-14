@@ -131,7 +131,7 @@ All three tiers are benchmarked as tries through `TrieEngine`. Load time include
 ## 🔧 Rebuilding the data
 
 ```bash
-pip install better_profanity
+pip install better_profanity==0.7.0   # the version the committed data was built with
 npm run compile        # python3 pipeline.py: builds data/ from the vendored files in sources/
 npm test               # integrity checks on the generated files
 pip install requests && python3 -m unittest test_pipeline.py
