@@ -25,8 +25,11 @@ jobs:
       - name: Install Python Dependencies
         run: pip install requests better_profanity
 
-      - name: Generate Dictionary Data
+      - name: Generate Dictionary Data (from vendored, checksum-verified sources)
         run: python3 pipeline.py
+
+      - name: Check Data Is Reproducible
+        run: git diff --exit-code -- data/
 
       - name: Run Pipeline Tests (Python)
         run: python3 -m unittest test_pipeline.py

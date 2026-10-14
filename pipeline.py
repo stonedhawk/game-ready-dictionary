@@ -1,3 +1,12 @@
+"""Builds the word lists in data/ from the source lists in sources/.
+
+    python3 pipeline.py            # build from the vendored files in sources/ (no network)
+    python3 pipeline.py --refresh  # re-download each source from its pinned upstream commit first
+
+Every source file is checked against its pinned SHA-256 either way, and the
+build exits non-zero on any failure.
+"""
+import argparse
 import hashlib
 import json
 import os
@@ -5,16 +14,15 @@ import re
 import sys
 from collections import defaultdict
 
-import requests
-
 try:
     from better_profanity import profanity
 except ImportError:
     # Without the filter the word lists would ship unfiltered, so stop here.
     sys.exit("better_profanity is required: pip install better_profanity")
 
-# Upstream word lists, pinned to fixed commits so builds reproduce.
-# Each download is checked against its SHA-256; a mismatch stops the build.
+# Upstream word lists, pinned to fixed commits so builds reproduce. Copies are
+# committed in sources/ and used by default; --refresh re-downloads them.
+# Each file is checked against its SHA-256; a mismatch stops the build.
 # en_US.txt and en_GB-ise.txt are ESDB (SCOWL) speller lists from en-wl/wordlist-diff
 # commit 3e3a454 (2026-03-18), built from en-wl/wordlist commit d0600b4.
 SOURCES = {
@@ -56,6 +64,8 @@ TRADEMARK_BLOCKLIST = [
 
 def download_file(url, filename, sha256):
     """Downloads a file and verifies its SHA-256. Raises on any failure."""
+    import requests  # only needed with --refresh
+
     print(f"🚀 Downloading {filename} from: {url}")
     response = requests.get(url, timeout=60)
     response.raise_for_status()
@@ -65,6 +75,25 @@ def download_file(url, filename, sha256):
     with open(filename, 'wb') as f:
         f.write(response.content)
     print(f"✅ Download complete: {filename}")
+
+def verify_file(filename, sha256):
+    """Checks a vendored source file against its pinned SHA-256."""
+    if not os.path.exists(filename):
+        raise FileNotFoundError(f"{filename} is missing; run with --refresh to download it")
+    with open(filename, 'rb') as f:
+        digest = hashlib.sha256(f.read()).hexdigest()
+    if digest != sha256:
+        raise ValueError(f"Checksum mismatch for {filename}: expected {sha256}, got {digest}")
+    print(f"✅ Verified vendored source: {filename}")
+
+def prepare_sources(refresh=False):
+    """Uses the committed sources/ files, or re-downloads them with refresh=True."""
+    os.makedirs("sources", exist_ok=True)
+    for source in SOURCES.values():
+        if refresh:
+            download_file(source["url"], source["file"], source["sha256"])
+        else:
+            verify_file(source["file"], source["sha256"])
 
 def require_words(words, name, minimum):
     """Fails the build if a tier comes out empty or suspiciously small."""
@@ -108,20 +137,18 @@ def build_by_length(words):
         by_length[len(word)].append(word)
     return dict(sorted(by_length.items()))
 
-def main():
+def main(refresh=False):
     DESK_FILE = SOURCES["desk"]["file"]
     FREQ_FILE = SOURCES["freq"]["file"]
     ENABLE_FILE = SOURCES["enable"]["file"]
     US_FILE = SOURCES["us"]["file"]
     UK_FILE = SOURCES["uk"]["file"]
 
-    # Step 0: Ensure directories exist
+    # Step 0: Ensure the output directory exists
     os.makedirs("data", exist_ok=True)
-    os.makedirs("sources", exist_ok=True)
 
-    # Step 1: Download pinned resources (checksum-verified)
-    for source in SOURCES.values():
-        download_file(source["url"], source["file"], source["sha256"])
+    # Step 1: Verify vendored sources (or re-download pinned copies with --refresh)
+    prepare_sources(refresh)
 
     # Step 2: Load and Clean Medium Tier (Full 12Dicts)
     with open(DESK_FILE, 'r', encoding='utf-8', errors='ignore') as f:
@@ -203,8 +230,12 @@ def main():
     print("\n✨ All tiers and dialects generated successfully!")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Build data/ from the pinned source lists.")
+    parser.add_argument("--refresh", action="store_true",
+                        help="re-download every source from its pinned upstream commit before building")
+    args = parser.parse_args()
     try:
-        main()
+        main(refresh=args.refresh)
     except Exception as e:
         print(f"❌ Error during pipeline execution: {e}", file=sys.stderr)
         sys.exit(1)

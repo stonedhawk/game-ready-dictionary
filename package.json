@@ -17,7 +17,8 @@
   "scripts": {
     "test": "node scripts/test_integrity.js",
     "benchmark": "node scripts/benchmark.js",
-    "compile": "python3 pipeline.py"
+    "compile": "python3 pipeline.py",
+    "compile:refresh": "python3 pipeline.py --refresh"
   },
   "keywords": [
     "dictionary",

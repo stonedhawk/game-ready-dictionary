@@ -11,7 +11,7 @@ All Pull Requests must adhere to the following three rules. Failure to comply wi
 ### 1. Immutable Output
 **Never manually edit the compiled `.json` files.**
 The JSON assets in `data/` (Small, Medium, Large, US and UK, in array, length-indexed and Trie formats) are generated programmatically. Any manual changes to these files will be overwritten the next time the pipeline runs. 
-- The pipeline re-downloads every file in `sources/` on each run, so local edits to those files are overwritten. Make word additions or removals in **`pipeline.py`**, for example through the **`TRADEMARK_BLOCKLIST`**. Each source is pinned to an upstream commit and a SHA-256 in `SOURCES`; to move to a newer upstream list, update both in the same PR and regenerate `data/`.
+- `sources/` holds vendored copies of the upstream lists, each pinned to an upstream commit and a SHA-256 in `SOURCES`. The build fails if a file is edited, so make word additions or removals in **`pipeline.py`**, for example through the **`TRADEMARK_BLOCKLIST`**. To move to a newer upstream list, update its URL and SHA-256 in `SOURCES`, run `python3 pipeline.py --refresh`, and commit the new `sources/` and `data/` files together.
 - If the logic of the Trie or tiering needs to change, modify the `pipeline.py` script itself.
 
 ### 2. Objective Verification
@@ -30,7 +30,7 @@ We remove brand names to protect developers from trademark issues, but we do not
 ## 🛠️ How to Contribute
 
 ### Adding or Removing Words
-1.  Update the `TRADEMARK_BLOCKLIST` or the processing logic in `pipeline.py`. (Editing files in `sources/` has no lasting effect, because the pipeline downloads fresh copies.)
+1.  Update the `TRADEMARK_BLOCKLIST` or the processing logic in `pipeline.py`. (Do not edit files in `sources/`: they are checksum-verified and the build will stop.)
 2.  Run the pipeline and tests locally to verify the changes:
     ```bash
     pip install requests better_profanity

@@ -99,6 +99,22 @@ Word counts are from the JSON files in this repository. Every export is a trie f
 
 ---
 
+### Download size
+
+Size of each tier's trie JSON, raw and gzip-compressed (what a browser downloads from a server or CDN that gzips JSON). 1 KB = 1,024 bytes.
+
+| Tier | Import | File | Raw | gzip -6 | gzip -9 |
+| :--- | :--- | :--- | ---: | ---: | ---: |
+| **Small** | `/small` | `data/small_trie.json` | 189 KB | 23 KB | 20 KB |
+| **Medium** | `/medium`, `/data` | `data/medium_trie.json` | 1,679 KB | 182 KB | 161 KB |
+| **Large** | `/large` | `data/large_trie.json` | 4,249 KB | 373 KB | 328 KB |
+| **US** | `/us` | `data/us_trie.json` | 2,121 KB | 202 KB | 178 KB |
+| **UK** | `/uk` | `data/uk_trie.json` | 2,117 KB | 201 KB | 177 KB |
+
+Level 6 is the default for gzip and for most web servers.
+
+---
+
 ## ⏱️ Performance Benchmarks
 
 Measured with `npm run benchmark` ([`scripts/benchmark.js`](scripts/benchmark.js)) on Node.js 25 on an Apple M4 Pro, three runs:
@@ -115,13 +131,15 @@ All three tiers are benchmarked as tries through `TrieEngine`. Load time include
 ## 🔧 Rebuilding the data
 
 ```bash
-pip install requests better_profanity
-npm run compile        # runs python3 pipeline.py
+pip install better_profanity
+npm run compile        # python3 pipeline.py: builds data/ from the vendored files in sources/
 npm test               # integrity checks on the generated files
-python3 -m unittest test_pipeline.py
+pip install requests && python3 -m unittest test_pipeline.py
 ```
 
-Every source list is pinned to a fixed upstream commit and checked against a SHA-256 in [`pipeline.py`](pipeline.py), so a rebuild reproduces the committed `data/` files byte for byte. The pipeline exits with a non-zero status if a download fails, a checksum does not match, `better_profanity` is missing, or a tier comes out too small. To move to a newer word list, update its URL and checksum in `SOURCES`.
+The source lists are vendored in `sources/`, so a build needs no network. Each file is pinned to a fixed upstream commit and checked against a SHA-256 in [`pipeline.py`](pipeline.py), and a rebuild reproduces the committed `data/` files byte for byte (the release workflow fails if it does not). The pipeline exits with a non-zero status if a source is missing or does not match its checksum, `better_profanity` is missing, or a tier comes out too small.
+
+To re-download the pinned files from upstream, run `npm run compile:refresh` (`python3 pipeline.py --refresh`, needs `requests`). To move to a newer word list, update its URL and SHA-256 in `SOURCES`, run with `--refresh`, and commit the new `sources/` and `data/` files together.
 
 ---
 
@@ -134,7 +152,7 @@ Every source list is pinned to a fixed upstream commit and checked against a SHA
 | Large | `enable1.txt` | [dolph/dictionary](https://github.com/dolph/dictionary) | commit `233d25a` |
 | US / UK | `en_US.txt`, `en_GB-ise.txt` (SCOWL/ESDB) | [en-wl/wordlist-diff](https://github.com/en-wl/wordlist-diff) | commit `3e3a454` (2026-03-18), generated from [en-wl/wordlist](https://github.com/en-wl/wordlist) commit `d0600b4` |
 
-`en-wl/wordlist-diff` warns that its history may be regenerated, which would change commit IDs. If that happens the pinned download fails and the build stops. Re-pin to the regenerated commit for `en-wl/wordlist` commit `d0600b4`; the checksum confirms the file is unchanged.
+Copies of all five files are committed in `sources/`, so builds do not depend on these repositories staying online. `en-wl/wordlist-diff` warns that its history may be regenerated, which would change commit IDs; only `--refresh` would be affected. Re-pin to the regenerated commit for `en-wl/wordlist` commit `d0600b4`; the checksum confirms the file is unchanged.
 
 ---
 
