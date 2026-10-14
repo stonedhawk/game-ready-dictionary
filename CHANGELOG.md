@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - `pipeline.py` now exits non-zero on download, checksum or size failures and when `better_profanity` is missing. It previously printed the error and exited 0, and silently skipped profanity filtering without the package.
 - `.npmignore` now excludes `sources/`, `test_pipeline.py`, `__pycache__/`, `dictionary-data.zip` and `data/clean_base.json`. Package size drops from 27.9 MB to 21.0 MB unpacked (7.4 MB to 3.1 MB packed) in the release workflow.
 - Benchmark measures the Small tier through `TrieEngine`.
+- Release workflow publishes to npm with trusted publishing (OIDC) instead of an `NPM_TOKEN` secret; npm adds provenance automatically. It now fails before publishing if the tag is not `v` + the `package.json` version (it used to overwrite `package.json` from the tag), runs `npm test`, and publishes to npm before creating the GitHub release.
 - README: per-tier raw and gzipped trie sizes.
 - README, CONTRIBUTING and LICENSE audited against the repository: corrected Node import example, replaced benchmark figures with measured values, and corrected the data license section.
 

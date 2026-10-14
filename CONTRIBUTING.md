@@ -50,4 +50,12 @@ If you find an offensive word that escaped our filters, please open an issue or 
 
 ---
 
+## 🚀 Releasing (maintainers)
+
+1.  Bump `version` in `package.json` and add a `CHANGELOG.md` entry in the same PR.
+2.  After it merges, tag `main` with `v` plus that version and push the tag, e.g. `git tag -a v1.1.0 -m "v1.1.0" && git push origin v1.1.0`.
+3.  The release workflow fails before publishing if the tag does not match `package.json`. It rebuilds `data/` and fails if it differs from the commit, runs the tests, publishes to npm through trusted publishing (no npm token), then creates the GitHub release with `dictionary-data.zip`.
+
+---
+
 By contributing, you agree that your code contributions will be licensed under the **MIT License** and your data contributions will be dedicated to the **Public Domain**.
