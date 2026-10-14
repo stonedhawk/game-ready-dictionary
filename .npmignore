@@ -1,9 +1,20 @@
-# NPM Ignore
+# Only the engine (src/), the compiled word lists (data/) and the docs ship to npm.
+
+# Build pipeline, tests and benchmarks
 pipeline.py
+test_pipeline.py
 scripts/
-5desk.txt
-google-10000.txt
-.github/
-implementation_plan.md
-clean_base.json
+__pycache__/
+*.pyc
+
+# Raw source lists, re-downloaded by the pipeline
+sources/
+
+# Release and repo-only files
+dictionary-data.zip
+data/clean_base.json
 docs/
+.github/
+.gitignore
+implementation_plan.md
+node_modules/
