@@ -55,8 +55,31 @@ jobs:
       - name: Run Integrity Tests (Node)
         run: npm test
 
+      - name: Diagnose npm Trusted Publishing (OIDC exchange)
+        # Prints the identity claims npm matches against and npm's verdict on the
+        # token exchange. Never prints the ID token or the npm token.
+        continue-on-error: true
+        run: |
+          ID_TOKEN="$(curl -sS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:registry.npmjs.org" | node -p 'JSON.parse(require("fs").readFileSync(0)).value')"
+          echo "::add-mask::${ID_TOKEN}"
+          ID_TOKEN="${ID_TOKEN}" node -e '
+            const c = JSON.parse(Buffer.from(process.env.ID_TOKEN.split(".")[1], "base64url"));
+            const keys = ["repository", "repository_owner", "workflow_ref", "job_workflow_ref", "environment", "ref", "event_name", "runner_environment"];
+            console.log(JSON.stringify(Object.fromEntries(keys.map(k => [k, c[k] ?? null])), null, 2));'
+          STATUS="$(curl -sS -o oidc-resp.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${ID_TOKEN}" \
+            "https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/@rahulmrx%2fgame-ready-dictionary")"
+          echo "npm OIDC exchange HTTP ${STATUS}"
+          if [ "${STATUS}" = "200" ] || [ "${STATUS}" = "201" ]; then
+            echo "Exchange succeeded (token not printed)."
+          else
+            node -p 'const b = require("fs").readFileSync("oidc-resp.json", "utf8"); try { const j = JSON.parse(b); j.message ?? j.error ?? b } catch { b }'
+          fi
+          rm -f oidc-resp.json
+
       - name: Publish to npm (trusted publishing, provenance generated automatically)
-        run: npm publish --access public
+        run: npm publish --access public --loglevel verbose
 
       - name: Package Assets
         run: zip -r dictionary-data.zip data/
